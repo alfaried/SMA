@@ -30,9 +30,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.loadCSVBtn.clicked.connect(self.PB)
         self.updateChartBtn.clicked.connect(self.updateChart)
 
-
     def updateChart(self):
-
         if hasattr(self, 'data'):
             start_date_text = self.startDateEdit.text()
             start_date_tokens = start_date_text.split("/")
@@ -66,10 +64,7 @@ class Main(QMainWindow, Ui_MainWindow):
             print("Actual DF:", self.data2.index.min(), self.data2.index.max())
             print(len(self.data2))
 
-            self.plotChart()
-
-            self.dateRangeDisplay.setText(str(self.data2.index.min()) + " to " + str(self.data2.index.max()))
-
+            self.plotChart(self.data2)
 
     def PB(self):
         try:
@@ -104,31 +99,29 @@ class Main(QMainWindow, Ui_MainWindow):
             self.data['crossBuy'] = np.nan
             self.data.loc[idxBuy,'crossBuy'] = self.data.loc[idxBuy,'Close']
 
-            self.plotChart()
-
-            self.dateRangeDisplay.setText(str(self.data.index.min()) + " to " + str(self.data.index.max()))
+            self.plotChart(self.data)
 
         except FileNotFoundError:
             msg = QMessageBox()
             msg.setText("Please select a valid CSV file!")
             msg.exec_()
 
-
-    def plotChart(self):
+    def plotChart(self,data):
         self.fig1 = Figure()
         self.ax1 = self.fig1.add_subplot(111)
         self.ax1.xaxis_date()
 
-        self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
-        self.ax1.plot(self.data[['20d']], 'b-',linewidth=1, label="20 Day Average")
-        self.ax1.plot(self.data[['50d']], 'c-',linewidth=1, label="50 Day Average")
-        self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
-        self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
+        self.ax1.plot(data[['Close']], 'k-', linewidth=1, label="Close")
+        self.ax1.plot(data[['20d']], 'b-',linewidth=1, label="20 Day Average")
+        self.ax1.plot(data[['50d']], 'c-',linewidth=1, label="50 Day Average")
+        self.ax1.plot(data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
+        self.ax1.plot(data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
         self.canvas1 = FigureCanvas(self.fig1)
         self.chartVerticalLayout.addWidget(self.canvas1)
         self.canvas1.draw()
 
+        self.dateRangeDisplay.setText(str(data.index.min()) + " to " + str(data.index.max()))
 
 
 if __name__ == '__main__':
