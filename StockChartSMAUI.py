@@ -66,34 +66,18 @@ class Main(QMainWindow, Ui_MainWindow):
             print("Actual DF:", self.data2.index.min(), self.data2.index.max())
             print(len(self.data2))
 
-            self.fig1 = Figure()
-            self.ax1 = self.fig1.add_subplot(111)
-            self.ax1.xaxis_date()
-
-            self.ax1.plot(self.data2[['Close']], 'k-', linewidth=1, label="Close")
-            self.ax1.plot(self.data2[['20d']], 'b-',linewidth=1, label="20 Day Average")
-            self.ax1.plot(self.data2[['50d']], 'c-',linewidth=1, label="50 Day Average")
-            self.ax1.plot(self.data2[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
-            self.ax1.plot(self.data2[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
-
-            self.canvas1 = FigureCanvas(self.fig1)
-            self.chartVerticalLayout.addWidget(self.canvas1)
-            self.canvas1.draw()
+            self.plotChart()
 
             self.dateRangeDisplay.setText(str(self.data2.index.min()) + " to " + str(self.data2.index.max()))
 
 
     def PB(self):
-        #--------------------START------------------------------
-
         try:
             options = QFileDialog.Options()
             options |= QFileDialog.DontUseNativeDialog
             fname = QFileDialog.getOpenFileName(self, 'Open file',
                                                 os.getcwd(), 'CSV(*.csv)',
                                                 options=options)
-
-
 
             for i in reversed(range(self.chartVerticalLayout.count())):
                 child = self.chartVerticalLayout.takeAt(0)
@@ -120,27 +104,32 @@ class Main(QMainWindow, Ui_MainWindow):
             self.data['crossBuy'] = np.nan
             self.data.loc[idxBuy,'crossBuy'] = self.data.loc[idxBuy,'Close']
 
-            self.fig1 = Figure()
-            self.ax1 = self.fig1.add_subplot(111)
-            self.ax1.xaxis_date()
-
-            self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
-            self.ax1.plot(self.data[['20d']], 'b-',linewidth=1, label="20 Day Average")
-            self.ax1.plot(self.data[['50d']], 'c-',linewidth=1, label="50 Day Average")
-            self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
-            self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
-
-            self.canvas1 = FigureCanvas(self.fig1)
-            self.chartVerticalLayout.addWidget(self.canvas1)
-            self.canvas1.draw()
+            self.plotChart()
 
             self.dateRangeDisplay.setText(str(self.data.index.min()) + " to " + str(self.data.index.max()))
 
-            #-------------------- END ------------------------------
         except FileNotFoundError:
             msg = QMessageBox()
             msg.setText("Please select a valid CSV file!")
             msg.exec_()
+
+
+    def plotChart(self):
+        self.fig1 = Figure()
+        self.ax1 = self.fig1.add_subplot(111)
+        self.ax1.xaxis_date()
+
+        self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
+        self.ax1.plot(self.data[['20d']], 'b-',linewidth=1, label="20 Day Average")
+        self.ax1.plot(self.data[['50d']], 'c-',linewidth=1, label="50 Day Average")
+        self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
+        self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
+
+        self.canvas1 = FigureCanvas(self.fig1)
+        self.chartVerticalLayout.addWidget(self.canvas1)
+        self.canvas1.draw()
+
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
