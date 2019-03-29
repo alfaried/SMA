@@ -27,7 +27,7 @@ class Main(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         # button to load CSV
-        self.loadCSVBtn.clicked.connect(self.PB)
+        self.loadCSVBtn.clicked.connect(self.initializeChart)
         self.updateChartBtn.clicked.connect(self.updateChart)
 
     def updateChart(self):
@@ -71,7 +71,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
             self.plotChart(self.data2,sma_1,sma_2)
 
-    def PB(self):
+    def initializeChart(self):
         try:
             options = QFileDialog.Options()
             options |= QFileDialog.DontUseNativeDialog
