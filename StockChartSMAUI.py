@@ -107,20 +107,20 @@ class Main(QMainWindow, Ui_MainWindow):
             msg.exec_()
 
     def plotChart(self,data):
-        self.fig1 = Figure()
-        self.ax1 = self.fig1.add_subplot(111)
-        self.ax1.xaxis_date()
+        fig1 = Figure()
+        ax1 = fig1.add_subplot(111)
+        ax1.xaxis_date()
 
-        self.ax1.plot(data[['Close']], 'k-', linewidth=1, label="Close")
-        self.ax1.plot(data[['20d']], 'b-',linewidth=1, label="20 Day Average")
-        self.ax1.plot(data[['50d']], 'c-',linewidth=1, label="50 Day Average")
-        self.ax1.plot(data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
-        self.ax1.plot(data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
+        ax1.plot(data[['Close']], 'k-', linewidth=1, label="Close")
+        ax1.plot(data[['20d']], 'b-',linewidth=1, label="20 Day Average")
+        ax1.plot(data[['50d']], 'c-',linewidth=1, label="50 Day Average")
+        ax1.plot(data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
+        ax1.plot(data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
-        self.canvas1 = FigureCanvas(self.fig1)
-        self.chartVerticalLayout.addWidget(self.canvas1)
-        self.canvas1.draw()
+        canvas1 = FigureCanvas(fig1)
+        canvas1.draw()
 
+        self.chartVerticalLayout.addWidget(canvas1)
         self.dateRangeDisplay.setText(str(data.index.min()) + " to " + str(data.index.max()))
 
 
