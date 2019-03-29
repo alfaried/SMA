@@ -27,6 +27,8 @@ class Main(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
         # button to load CSV
+        sma_1 = 20
+        sma_2 = 50        
         self.loadCSVBtn.clicked.connect(self.PB)
         self.updateChartBtn.clicked.connect(self.updateChart)
     
@@ -52,6 +54,10 @@ class Main(QMainWindow, Ui_MainWindow):
             print(start_date, end_date)
 
             
+            sma_1 = int(self.smaOneEdit.text())
+            sma_2 = int(self.smaTwoEdit.text())
+            
+            
             for i in reversed(range(self.chartVerticalLayout.count())): 
                 child = self.chartVerticalLayout.takeAt(0)
                 if child.widget():
@@ -71,8 +77,8 @@ class Main(QMainWindow, Ui_MainWindow):
             self.ax1.xaxis_date()
 
             self.ax1.plot(self.data2[['Close']], 'k-', linewidth=1, label="Close")
-            self.ax1.plot(self.data2[['20d']], 'b-',linewidth=1, label="20 Day Average")
-            self.ax1.plot(self.data2[['50d']], 'c-',linewidth=1, label="50 Day Average")
+            self.ax1.plot(self.data2[[str(sma_1) + 'd']], 'b-',linewidth=1, label= str(sma_1) + " Day Average")
+            self.ax1.plot(self.data2[[str(sma_2) + 'd']], 'c-',linewidth=1, label= str(sma_2) + " Day Average")
             self.ax1.plot(self.data2[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
             self.ax1.plot(self.data2[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
@@ -103,12 +109,16 @@ class Main(QMainWindow, Ui_MainWindow):
 
             self.data = pd.read_csv(fname[0],index_col=0,parse_dates=True)
             self.data.drop(self.data.index[self.data['Volume']==0],inplace=True)
-            self.data['20d'] = np.round(self.data['Close'].rolling(window=20).mean(),3)
-            self.data['50d'] = np.round(self.data['Close'].rolling(window=50).mean(),3)
+            self.data[str(sma_1) + 'd'] = np.round(self.data['Close'].rolling(window=sma_1).mean(),3)
+            self.data[str(sma_2) + 'd'] = np.round(self.data['Close'].rolling(window=sma_2).mean(),3)
             r = self.data.iloc[:15, :]
             d = date2num(r.index.date)
-
-            x = self.data['20d']-self.data['50d']
+            
+            if sma_1 < sma_2:
+                x = self.data[str(sma_1) + 'd'] - self.data[str(sma_2) + 'd']
+            else:
+                x = self.data[str(sma_1) + 'd'] - self.data[str(sma_2) + 'd']
+                
             x[x>0] = 1
             x[x<=0] = 0
             y = x.diff()
@@ -124,8 +134,8 @@ class Main(QMainWindow, Ui_MainWindow):
             self.ax1.xaxis_date()
 
             self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
-            self.ax1.plot(self.data[['20d']], 'b-',linewidth=1, label="20 Day Average")
-            self.ax1.plot(self.data[['50d']], 'c-',linewidth=1, label="50 Day Average")
+            self.ax1.plot(self.data[[str(sma_1) + 'd']], 'b-',linewidth=1, label= str(sma_1) + " Day Average")
+            self.ax1.plot(self.data[[str(sma_2) + 'd']], 'c-',linewidth=1, label= str(sma_2) + " Day Average")
             self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
             self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
