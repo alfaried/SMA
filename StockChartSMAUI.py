@@ -2,6 +2,7 @@ import os
 import sys
 import math
 import datetime
+import traceback
 import matplotlib
 import numpy as np
 import pandas as pd
@@ -24,12 +25,14 @@ class Main(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
 
-        # Load CSV File button
-        self.loadCSVBtn.clicked.connect(self.loadCSVFile)
+        try:
+            # Load CSV File button
+            self.loadCSVBtn.clicked.connect(self.loadCSVFile)
 
-        # Update Chart button
-        self.updateChartBtn.clicked.connect(self.updateCanvas)
-
+            # Update Chart button
+            self.updateChartBtn.clicked.connect(self.updateCanvas)
+        except:
+             traceback.print_exc()
 
     def loadCSVFile(self):
         try:
@@ -106,10 +109,10 @@ class Main(QMainWindow, Ui_MainWindow):
 
 
     def initializeGraphValues(self,data):
-        # ----------- Initialize sma_1 & sma_2 value from inputs ------------ #
+        # ------- Initialize global sma_1 & sma_2 value from inputs -------- #
         self.sma_1 = int(self.smaOneEdit.text())
         self.sma_2 = int(self.smaTwoEdit.text())
-        # ----------------------------- End ----------------------------- #
+        # ------------------------------ End ------------------------------- #
 
         data[str(self.sma_1) + 'd'] = np.round(data['Close'].rolling(window=self.sma_1).mean(),3)
         data[str(self.sma_2) + 'd'] = np.round(data['Close'].rolling(window=self.sma_2).mean(),3)
