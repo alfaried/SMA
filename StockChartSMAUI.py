@@ -31,7 +31,7 @@ class Main(QMainWindow, Ui_MainWindow):
         sma_2 = 50        
         self.loadCSVBtn.clicked.connect(self.PB)
         self.updateChartBtn.clicked.connect(self.updateChart)
-    
+
 
     def updateChart(self):
 
@@ -50,7 +50,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
             start_date = datetime.date(start_date_year, start_date_month, start_date_day)
             end_date = datetime.date(end_date_year, end_date_month, end_date_day)
-            
+
             print(start_date, end_date)
 
             
@@ -62,7 +62,7 @@ class Main(QMainWindow, Ui_MainWindow):
                 child = self.chartVerticalLayout.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
-            
+
             self.data2 = self.data.copy()
 
             min_date_cond = (self.data2.index >= f"%s-%s-%s" % (start_date_year, start_date_month, start_date_day))
@@ -88,6 +88,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
             self.dateRangeDisplay.setText(str(self.data2.index.min()) + " to " + str(self.data2.index.max()))
 
+
     def PB(self):
         #--------------------START------------------------------
 
@@ -97,10 +98,10 @@ class Main(QMainWindow, Ui_MainWindow):
             fname = QFileDialog.getOpenFileName(self, 'Open file',
                                                 os.getcwd(), 'CSV(*.csv)',
                                                 options=options)
-            
 
-            
-            for i in reversed(range(self.chartVerticalLayout.count())): 
+
+
+            for i in reversed(range(self.chartVerticalLayout.count())):
                 child = self.chartVerticalLayout.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
