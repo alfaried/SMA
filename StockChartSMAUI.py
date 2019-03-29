@@ -129,6 +129,9 @@ class Main(QMainWindow, Ui_MainWindow):
         ax1.plot(data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
         ax1.plot(data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
+        ax1.set_xticklabels(data.index)
+        ax1.tick_params(axis='x', rotation=45)
+
         canvas1 = FigureCanvas(fig1)
         canvas1.draw()
 
