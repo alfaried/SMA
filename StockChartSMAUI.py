@@ -26,9 +26,7 @@ class Main(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        # button to load CSV
-        sma_1 = 20
-        sma_2 = 50        
+        # button to load CSV       
         self.loadCSVBtn.clicked.connect(self.PB)
         self.updateChartBtn.clicked.connect(self.updateChart)
 
@@ -89,20 +87,23 @@ class Main(QMainWindow, Ui_MainWindow):
                 child = self.chartVerticalLayout.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
-
+                    
+            self.sma_1 = 20
+            self.sma_2 = 50 
+            
             self.fileNameDisplay.setText(str(fname[0]))
 
             self.data = pd.read_csv(fname[0],index_col=0,parse_dates=True)
             self.data.drop(self.data.index[self.data['Volume']==0],inplace=True)
-            self.data[str(sma_1) + 'd'] = np.round(self.data['Close'].rolling(window=sma_1).mean(),3)
-            self.data[str(sma_2) + 'd'] = np.round(self.data['Close'].rolling(window=sma_2).mean(),3)
+            self.data[str(self.sma_1) + 'd'] = np.round(self.data['Close'].rolling(window=self.sma_1).mean(),3)
+            self.data[str(self.sma_2) + 'd'] = np.round(self.data['Close'].rolling(window=self.sma_2).mean(),3)
             r = self.data.iloc[:15, :]
             d = date2num(r.index.date)
             
-            if sma_1 < sma_2:
-                x = self.data[str(sma_1) + 'd'] - self.data[str(sma_2) + 'd']
+            if self.sma_1 < self.sma_2:
+                x = self.data[str(self.sma_1) + 'd'] - self.data[str(self.sma_2) + 'd']
             else:
-                x = self.data[str(sma_1) + 'd'] - self.data[str(sma_2) + 'd']
+                x = self.data[str(self.sma_2) + 'd'] - self.data[str(self.sma_1) + 'd']
                 
             x[x>0] = 1
             x[x<=0] = 0
@@ -130,8 +131,8 @@ class Main(QMainWindow, Ui_MainWindow):
         self.ax1.xaxis_date()
 
         self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
-        self.ax1.plot(self.data[[str(sma_1) + 'd']], 'b-',linewidth=1, label= str(sma_1) + " Day Average")
-        self.ax1.plot(self.data[[str(sma_2) + 'd']], 'c-',linewidth=1, label= str(sma_2) + " Day Average")
+        self.ax1.plot(self.data[[str(self.sma_1) + 'd']], 'b-',linewidth=1, label= str(self.sma_1) + " Day Average")
+        self.ax1.plot(self.data[[str(self.sma_2) + 'd']], 'c-',linewidth=1, label= str(self.sma_2) + " Day Average")
         self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
         self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
