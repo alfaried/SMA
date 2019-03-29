@@ -51,12 +51,21 @@ class Main(QMainWindow, Ui_MainWindow):
 
             # print(start_date, end_date)
 
+<<<<<<< HEAD
             # reinitialize sma_1 and sma_2 value
             sma_1 = int(self.smaOneEdit.text())
             sma_2 = int(self.smaTwoEdit.text())
 
 
             for i in reversed(range(self.chartVerticalLayout.count())):
+=======
+            
+            self.sma_1 = int(self.smaOneEdit.text())
+            self.sma_2 = int(self.smaTwoEdit.text())
+            
+            
+            for i in reversed(range(self.chartVerticalLayout.count())): 
+>>>>>>> 63a07aeb5e8498778a43a56c93d4c94314a6c7b6
                 child = self.chartVerticalLayout.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
