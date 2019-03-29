@@ -130,23 +130,23 @@ class Main(QMainWindow, Ui_MainWindow):
         return data
 
     def plotChart(self,data):
-        fig1 = Figure()
-        ax1 = fig1.add_subplot(111)
-        ax1.xaxis_date()
+        figure = Figure()
+        axis = figure.add_subplot(111)
+        axis.xaxis_date()
 
-        ax1.plot(data[['Close']], 'k-', linewidth=1, label="Close")
-        ax1.plot(data[[str(self.sma_1) + 'd']], 'b-',linewidth=1, label= str(self.sma_1) + " Day Average")
-        ax1.plot(data[[str(self.sma_2) + 'd']], 'c-',linewidth=1, label= str(self.sma_2) + " Day Average")
-        ax1.plot(data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
-        ax1.plot(data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
+        axis.plot(data[['Close']], 'k-', linewidth=1, label="Close")
+        axis.plot(data[[str(self.sma_1) + 'd']], 'b-',linewidth=1, label= str(self.sma_1) + " Day Average")
+        axis.plot(data[[str(self.sma_2) + 'd']], 'c-',linewidth=1, label= str(self.sma_2) + " Day Average")
+        axis.plot(data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
+        axis.plot(data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
-        ax1.set_xticklabels(data.index.date)
-        ax1.tick_params(axis='x', rotation=45)
+        axis.set_xticklabels(data.index.date)
+        axis.tick_params(axis='x', rotation=45)
 
-        canvas1 = FigureCanvas(fig1)
-        canvas1.draw()
+        canvas = FigureCanvas(figure)
+        canvas.draw()
 
-        self.chartVerticalLayout.addWidget(canvas1)
+        self.chartVerticalLayout.addWidget(canvas)
         self.dateRangeDisplay.setText(str(data.index.date.min()) + " to " + str(data.index.date.max()))
 
 
