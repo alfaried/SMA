@@ -26,18 +26,20 @@ class Main(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
-        # button to load CSV       
+        # button to load CSV
         self.loadCSVBtn.clicked.connect(self.PB)
         self.updateChartBtn.clicked.connect(self.updateChart)
 
     def updateChart(self):
         if hasattr(self, 'data'):
+            # reinitialize start date
             start_date_text = self.startDateEdit.text()
             start_date_tokens = start_date_text.split("/")
             start_date_day = int(start_date_tokens[0])
             start_date_month = int(start_date_tokens[1])
             start_date_year = int(start_date_tokens[2])
 
+            # reinitialize end dat
             end_date_text = self.endDateEdit.text()
             end_date_tokens = end_date_text.split("/")
             end_date_day = int(end_date_tokens[0])
@@ -47,14 +49,14 @@ class Main(QMainWindow, Ui_MainWindow):
             start_date = datetime.date(start_date_year, start_date_month, start_date_day)
             end_date = datetime.date(end_date_year, end_date_month, end_date_day)
 
-            print(start_date, end_date)
+            # print(start_date, end_date)
 
-            
+            # reinitialize sma_1 and sma_2 value
             sma_1 = int(self.smaOneEdit.text())
             sma_2 = int(self.smaTwoEdit.text())
-            
-            
-            for i in reversed(range(self.chartVerticalLayout.count())): 
+
+
+            for i in reversed(range(self.chartVerticalLayout.count())):
                 child = self.chartVerticalLayout.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
@@ -64,11 +66,11 @@ class Main(QMainWindow, Ui_MainWindow):
             min_date_cond = (self.data2.index >= f"%s-%s-%s" % (start_date_year, start_date_month, start_date_day))
             max_date_cond = (self.data2.index <= f"%s-%s-%s" % (end_date_year, end_date_month, end_date_day))
             self.data2 = self.data2[min_date_cond & max_date_cond]
-            print("Query:", min_date_cond, max_date_cond)
-            print("Actual DF:", self.data2.index.min(), self.data2.index.max())
-            print(len(self.data2))
+            # print("Query:", min_date_cond, max_date_cond)
+            # print("Actual DF:", self.data2.index.min(), self.data2.index.max())
+            # print(len(self.data2))
 
-            self.plotChart(self.data2)
+            self.plotChart(self.data2,sma_1,sma_2)
 
     def PB(self):
         try:
@@ -82,24 +84,24 @@ class Main(QMainWindow, Ui_MainWindow):
                 child = self.chartVerticalLayout.takeAt(0)
                 if child.widget():
                     child.widget().deleteLater()
-                    
-            self.sma_1 = 20
-            self.sma_2 = 50 
-            
+
+            sma_1 = 20
+            sma_2 = 50
+
             self.fileNameDisplay.setText(str(fname[0]))
 
             self.data = pd.read_csv(fname[0],index_col=0,parse_dates=True)
             self.data.drop(self.data.index[self.data['Volume']==0],inplace=True)
-            self.data[str(self.sma_1) + 'd'] = np.round(self.data['Close'].rolling(window=self.sma_1).mean(),3)
-            self.data[str(self.sma_2) + 'd'] = np.round(self.data['Close'].rolling(window=self.sma_2).mean(),3)
+            self.data[str(sma_1) + 'd'] = np.round(self.data['Close'].rolling(window=sma_1).mean(),3)
+            self.data[str(sma_2) + 'd'] = np.round(self.data['Close'].rolling(window=sma_2).mean(),3)
             r = self.data.iloc[:15, :]
             d = date2num(r.index.date)
-            
-            if self.sma_1 < self.sma_2:
-                x = self.data[str(self.sma_1) + 'd'] - self.data[str(self.sma_2) + 'd']
+
+            if sma_1 < sma_2:
+                x = self.data[str(sma_1) + 'd'] - self.data[str(sma_2) + 'd']
             else:
-                x = self.data[str(self.sma_2) + 'd'] - self.data[str(self.sma_1) + 'd']
-                
+                x = self.data[str(sma_2) + 'd'] - self.data[str(sma_1) + 'd']
+
             x[x>0] = 1
             x[x<=0] = 0
             y = x.diff()
@@ -110,21 +112,21 @@ class Main(QMainWindow, Ui_MainWindow):
             self.data['crossBuy'] = np.nan
             self.data.loc[idxBuy,'crossBuy'] = self.data.loc[idxBuy,'Close']
 
-            self.plotChart(self.data)
+            self.plotChart(self.data,sma_1,sma_2)
 
         except FileNotFoundError:
             msg = QMessageBox()
             msg.setText("Please select a valid CSV file!")
             msg.exec_()
 
-    def plotChart(self,data):
+    def plotChart(self,data,sma_1,sma_2):
         fig1 = Figure()
         ax1 = fig1.add_subplot(111)
         ax1.xaxis_date()
 
         ax1.plot(data[['Close']], 'k-', linewidth=1, label="Close")
-        ax1.plot(self.data[[str(self.sma_1) + 'd']], 'b-',linewidth=1, label= str(self.sma_1) + " Day Average")
-        ax1.plot(self.data[[str(self.sma_2) + 'd']], 'c-',linewidth=1, label= str(self.sma_2) + " Day Average")
+        ax1.plot(data[[str(sma_1) + 'd']], 'b-',linewidth=1, label= str(sma_1) + " Day Average")
+        ax1.plot(data[[str(sma_2) + 'd']], 'c-',linewidth=1, label= str(sma_2) + " Day Average")
         ax1.plot(data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
         ax1.plot(data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
