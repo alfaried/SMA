@@ -29,7 +29,7 @@ class Main(QMainWindow, Ui_MainWindow):
         # button to load CSV
         self.loadCSVBtn.clicked.connect(self.PB)
         self.updateChartBtn.clicked.connect(self.updateChart)
-        
+
 
     def updateChart(self):
         start_date_text = self.startDateEdit.text()
@@ -46,11 +46,10 @@ class Main(QMainWindow, Ui_MainWindow):
 
         start_date = datetime.date(start_date_year, start_date_month, start_date_day)
         end_date = datetime.date(end_date_year, end_date_month, end_date_day)
-        
+
         print(start_date, end_date)
 
-        
-        for i in reversed(range(self.chartVerticalLayout.count())): 
+        for i in reversed(range(self.chartVerticalLayout.count())):
             child = self.chartVerticalLayout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
@@ -62,11 +61,11 @@ class Main(QMainWindow, Ui_MainWindow):
         self.ax1 = self.fig1.add_subplot(111)
         self.ax1.xaxis_date()
 
-        self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
-        self.ax1.plot(self.data[['20d']], 'b-',linewidth=1, label="20 Day Average")
-        self.ax1.plot(self.data[['50d']], 'c-',linewidth=1, label="50 Day Average")
-        self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
-        self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
+        # self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
+        # self.ax1.plot(self.data[['20d']], 'b-',linewidth=1, label="20 Day Average")
+        # self.ax1.plot(self.data[['50d']], 'c-',linewidth=1, label="50 Day Average")
+        # self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
+        # self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
         self.canvas1 = FigureCanvas(self.fig1)
         self.chartVerticalLayout.addWidget(self.canvas1)
@@ -74,17 +73,17 @@ class Main(QMainWindow, Ui_MainWindow):
 
         self.dateRangeDisplay.setText(str(self.data.index.min()) + " to " + str(self.data.index.max()))
 
+
     def PB(self):
-        #--------------------START------------------------------
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fname = QFileDialog.getOpenFileName(self, 'Open file',
                                             os.getcwd(), 'CSV(*.csv)',
                                             options=options)
-        
 
-        
-        for i in reversed(range(self.chartVerticalLayout.count())): 
+
+
+        for i in reversed(range(self.chartVerticalLayout.count())):
             child = self.chartVerticalLayout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
@@ -113,11 +112,11 @@ class Main(QMainWindow, Ui_MainWindow):
         self.ax1 = self.fig1.add_subplot(111)
         self.ax1.xaxis_date()
 
-        self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
-        self.ax1.plot(self.data[['20d']], 'b-',linewidth=1, label="20 Day Average")
-        self.ax1.plot(self.data[['50d']], 'c-',linewidth=1, label="50 Day Average")
-        self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
-        self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
+        # self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
+        # self.ax1.plot(self.data[['20d']], 'b-',linewidth=1, label="20 Day Average")
+        # self.ax1.plot(self.data[['50d']], 'c-',linewidth=1, label="50 Day Average")
+        # self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
+        # self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
         self.canvas1 = FigureCanvas(self.fig1)
         self.chartVerticalLayout.addWidget(self.canvas1)
@@ -125,7 +124,14 @@ class Main(QMainWindow, Ui_MainWindow):
 
         self.dateRangeDisplay.setText(str(self.data.index.min()) + " to " + str(self.data.index.max()))
 
-        #-------------------- END ------------------------------
+
+    def plotChart(self):
+        self.ax1.plot(self.data[['Close']], 'k-', linewidth=1, label="Close")
+        self.ax1.plot(self.data[['20d']], 'b-',linewidth=1, label="20 Day Average")
+        self.ax1.plot(self.data[['50d']], 'c-',linewidth=1, label="50 Day Average")
+        self.ax1.plot(self.data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
+        self.ax1.plot(self.data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
