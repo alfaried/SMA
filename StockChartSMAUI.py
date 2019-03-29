@@ -84,8 +84,9 @@ class Main(QMainWindow, Ui_MainWindow):
                 if child.widget():
                     child.widget().deleteLater()
 
-            sma_1 = 20
-            sma_2 = 50
+            # reinitialize sma_1 and sma_2 value
+            sma_1 = int(self.smaOneEdit.text())
+            sma_2 = int(self.smaTwoEdit.text())
 
             self.fileNameDisplay.setText(str(fname[0]))
 
@@ -93,8 +94,6 @@ class Main(QMainWindow, Ui_MainWindow):
             self.data.drop(self.data.index[self.data['Volume']==0],inplace=True)
             self.data[str(sma_1) + 'd'] = np.round(self.data['Close'].rolling(window=sma_1).mean(),3)
             self.data[str(sma_2) + 'd'] = np.round(self.data['Close'].rolling(window=sma_2).mean(),3)
-            r = self.data.iloc[:15, :]
-            d = date2num(r.index.date)
 
             if sma_1 < sma_2:
                 x = self.data[str(sma_1) + 'd'] - self.data[str(sma_2) + 'd']
@@ -136,7 +135,7 @@ class Main(QMainWindow, Ui_MainWindow):
         canvas1.draw()
 
         self.chartVerticalLayout.addWidget(canvas1)
-        self.dateRangeDisplay.setText(str(data.index.min()) + " to " + str(data.index.max()))
+        self.dateRangeDisplay.setText(str(data.index.date.min()) + " to " + str(data.index.date.max()))
 
 
 if __name__ == '__main__':
