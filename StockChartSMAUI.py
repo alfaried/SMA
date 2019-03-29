@@ -24,6 +24,10 @@ class Main(QMainWindow, Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.cache_data = {
+            'fileName' : None,
+            'data' : pd.DataFrame()
+        }
 
         try:
             # Load CSV File button
@@ -45,6 +49,13 @@ class Main(QMainWindow, Ui_MainWindow):
                                                 os.getcwd(), 'CSV(*.csv)',
                                                 options=options)
 
+            if fname[0] == '' or fname[0] == None:
+                if self.cache_data['fileName'] != None and not self.cache_data['data'].empty:
+                    self.fileNameDisplay.setText(str(self.cache_data['fileName']))
+                    self.plotCanvas(self.cache_data['data'])
+                return
+
+            self.cache_data['fileName'] = fname[0]
             self.fileNameDisplay.setText(str(fname[0]))
 
             self.data = pd.read_csv(fname[0],index_col=0,parse_dates=True)
@@ -60,7 +71,6 @@ class Main(QMainWindow, Ui_MainWindow):
             self.startDateEdit.setDate(initial_data.index.min().date())
             self.endDateEdit.setDate(initial_data.index.max().date())
             # ----------------------------- End ----------------------------- #
-
         except FileNotFoundError:
             msg = QMessageBox()
             msg.setText("Please select a valid CSV file.")
@@ -138,6 +148,8 @@ class Main(QMainWindow, Ui_MainWindow):
 
 
     def plotCanvas(self,data):
+        self.cache_data['data'] = data
+
         figure = Figure()
         axis = figure.add_subplot(111)
         axis.xaxis_date()
