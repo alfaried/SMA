@@ -1,19 +1,20 @@
-import sys
 import os
-from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
-from PyQt5 import uic
+import sys
 import math
-import pandas as pd
-import numpy as np
+import datetime
 import matplotlib
+import numpy as np
+import pandas as pd
+from PyQt5 import uic
+from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
+
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-plt.rcParams["figure.autolayout"] = True
-from matplotlib.dates import date2num
 from matplotlib.figure import Figure
+from matplotlib.dates import date2num
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-import datetime
 
+plt.rcParams["figure.autolayout"] = True
 qtCreatorFile = "StockChartSMA.ui"
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
