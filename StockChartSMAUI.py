@@ -24,52 +24,17 @@ class Main(QMainWindow, Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
 
-        # button to load CSV
+        # Load CSV File button
         self.loadCSVBtn.clicked.connect(self.initializeChart)
 
-        # button to update chart
+        # Update Chart button
         self.updateChartBtn.clicked.connect(self.updateChart)
-
-    def updateChart(self):
-        if hasattr(self, 'data'):
-            self.reinitializeCanvas()
-
-            # reinitialize start date from inputs
-            start_date_tokens = self.startDateEdit.text().split("/")
-            start_date_day = int(start_date_tokens[0])
-            start_date_month = int(start_date_tokens[1])
-            start_date_year = int(start_date_tokens[2])
-
-            # reinitialize end date from input
-            end_date_tokens = self.endDateEdit.text().split("/")
-            end_date_day = int(end_date_tokens[0])
-            end_date_month = int(end_date_tokens[1])
-            end_date_year = int(end_date_tokens[2])
-
-            # Not sure what this does. Seems like it doesn't affect anything
-            # when commented out. Should we delete it?
-            #
-            # start_date = datetime.date(start_date_year, start_date_month, start_date_day)
-            # end_date = datetime.date(end_date_year, end_date_month, end_date_day)
-
-            update_data = self.data.copy()
-            update_data = self.initializeGraphValues(update_data)
-
-            min_date_cond = (update_data.index >= f"%s-%s-%s" % (start_date_year, start_date_month, start_date_day))
-            max_date_cond = (update_data.index <= f"%s-%s-%s" % (end_date_year, end_date_month, end_date_day))
-            update_data = update_data[min_date_cond & max_date_cond]
-
-            self.plotChart(update_data)
-            
-        else:
-            msg = QMessageBox()
-            msg.setText("Please upload a valid CSV file first.")
-            msg.exec_()
 
     def initializeChart(self):
         try:
             self.reinitializeCanvas()
 
+            # ---------- Reads and process CSV file in a dataframe ---------- #
             options = QFileDialog.Options()
             options |= QFileDialog.DontUseNativeDialog
             fname = QFileDialog.getOpenFileName(self, 'Open file',
@@ -80,19 +45,54 @@ class Main(QMainWindow, Ui_MainWindow):
 
             self.data = pd.read_csv(fname[0],index_col=0,parse_dates=True)
             self.data.drop(self.data.index[self.data['Volume']==0],inplace=True)
+            # ----------------------------- End ----------------------------- #
 
             initial_data = self.data.copy()
             initial_data = self.initializeGraphValues(initial_data)
 
             self.plotChart(initial_data)
 
-            # update date inputs in UI based on uploaded data
-            self.startDateEdit.setDate(self.data.index.min().date())
-            self.endDateEdit.setDate(self.data.index.max().date())
+            # ------------------ Updates date inputs in UI ------------------ #
+            self.startDateEdit.setDate(initial_data.index.min().date())
+            self.endDateEdit.setDate(initial_data.index.max().date())
+            # ----------------------------- End ----------------------------- #
 
         except FileNotFoundError:
             msg = QMessageBox()
             msg.setText("Please select a valid CSV file.")
+            msg.exec_()
+
+    def updateChart(self):
+        if hasattr(self, 'data'):
+            self.reinitializeCanvas()
+
+            # ------------- Reinitialize start date from inputs ------------- #
+            start_date_tokens = self.startDateEdit.text().split("/")
+            start_date_day = int(start_date_tokens[0])
+            start_date_month = int(start_date_tokens[1])
+            start_date_year = int(start_date_tokens[2])
+            # ----------------------------- End ----------------------------- #
+
+            # -------------- Reinitialize end date from inputs -------------- #
+            end_date_tokens = self.endDateEdit.text().split("/")
+            end_date_day = int(end_date_tokens[0])
+            end_date_month = int(end_date_tokens[1])
+            end_date_year = int(end_date_tokens[2])
+            # ----------------------------- End ----------------------------- #
+
+            update_data = self.data.copy()
+            update_data = self.initializeGraphValues(update_data)
+
+            min_date_cond = (update_data.index >= f"%s-%s-%s" % (start_date_year, start_date_month, start_date_day))
+            max_date_cond = (update_data.index <= f"%s-%s-%s" % (end_date_year, end_date_month, end_date_day))
+            update_data = update_data[min_date_cond & max_date_cond]
+
+            self.plotChart(update_data)
+
+        else:
+            # If user clicks on "Update Chart" button before uploading a CSV
+            msg = QMessageBox()
+            msg.setText("Please upload a valid CSV file first.")
             msg.exec_()
 
     def reinitializeCanvas(self):
@@ -102,9 +102,10 @@ class Main(QMainWindow, Ui_MainWindow):
                 child.widget().deleteLater()
 
     def initializeGraphValues(self,data):
-        # initialize sma_1 and sma_2 value from inputs
+        # ----------- Initialize sma_1 & sma_2 value from inputs ------------ #
         self.sma_1 = int(self.smaOneEdit.text())
         self.sma_2 = int(self.smaTwoEdit.text())
+        # ----------------------------- End ----------------------------- #
 
         data[str(self.sma_1) + 'd'] = np.round(data['Close'].rolling(window=self.sma_1).mean(),3)
         data[str(self.sma_2) + 'd'] = np.round(data['Close'].rolling(window=self.sma_2).mean(),3)
