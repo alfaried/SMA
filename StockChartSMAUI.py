@@ -60,6 +60,11 @@ class Main(QMainWindow, Ui_MainWindow):
             update_data = update_data[min_date_cond & max_date_cond]
 
             self.plotChart(update_data)
+            
+        else:
+            msg = QMessageBox()
+            msg.setText("Please upload a valid CSV file first.")
+            msg.exec_()
 
     def initializeChart(self):
         try:
@@ -87,7 +92,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
         except FileNotFoundError:
             msg = QMessageBox()
-            msg.setText("Please select a valid CSV file!")
+            msg.setText("Please select a valid CSV file.")
             msg.exec_()
 
     def reinitializeCanvas(self):
