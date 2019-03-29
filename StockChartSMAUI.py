@@ -50,8 +50,8 @@ class Main(QMainWindow, Ui_MainWindow):
             print(start_date, end_date)
 
             
-            sma_1 = int(self.smaOneEdit.text())
-            sma_2 = int(self.smaTwoEdit.text())
+            self.sma_1 = int(self.smaOneEdit.text())
+            self.sma_2 = int(self.smaTwoEdit.text())
             
             
             for i in reversed(range(self.chartVerticalLayout.count())): 
