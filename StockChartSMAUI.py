@@ -69,7 +69,7 @@ class Main(QMainWindow, Ui_MainWindow):
             # print("Actual DF:", self.data2.index.min(), self.data2.index.max())
             # print(len(self.data2))
 
-            self.plotChart(self.data2,sma_1,sma_2)
+            # self.plotChart(self.data2,sma_1,sma_2)
 
     def initializeChart(self):
         try:
@@ -111,6 +111,10 @@ class Main(QMainWindow, Ui_MainWindow):
             self.data.loc[idxBuy,'crossBuy'] = self.data.loc[idxBuy,'Close']
 
             self.plotChart(self.data,sma_1,sma_2)
+
+            print("Dates for picker", self.data.index.min(), type(self.data.index.min()), self.data.index.max())
+            self.startDateEdit.setDate(self.data.index.min().date())
+            self.endDateEdit.setDate(self.data.index.max().date())
 
         except FileNotFoundError:
             msg = QMessageBox()
