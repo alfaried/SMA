@@ -25,12 +25,13 @@ class Main(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
         # Load CSV File button
-        self.loadCSVBtn.clicked.connect(self.initializeChart)
+        self.loadCSVBtn.clicked.connect(self.loadCSVFile)
 
         # Update Chart button
-        self.updateChartBtn.clicked.connect(self.updateChart)
+        self.updateChartBtn.clicked.connect(self.updateCanvas)
 
-    def initializeChart(self):
+
+    def loadCSVFile(self):
         try:
             self.reinitializeCanvas()
 
@@ -50,7 +51,7 @@ class Main(QMainWindow, Ui_MainWindow):
             initial_data = self.data.copy()
             initial_data = self.initializeGraphValues(initial_data)
 
-            self.plotChart(initial_data)
+            self.plotCanvas(initial_data)
 
             # ------------------ Updates date inputs in UI ------------------ #
             self.startDateEdit.setDate(initial_data.index.min().date())
@@ -62,7 +63,8 @@ class Main(QMainWindow, Ui_MainWindow):
             msg.setText("Please select a valid CSV file.")
             msg.exec_()
 
-    def updateChart(self):
+
+    def updateCanvas(self):
         if hasattr(self, 'data'):
             self.reinitializeCanvas()
 
@@ -87,7 +89,7 @@ class Main(QMainWindow, Ui_MainWindow):
             max_date_cond = (update_data.index <= f"%s-%s-%s" % (end_date_year, end_date_month, end_date_day))
             update_data = update_data[min_date_cond & max_date_cond]
 
-            self.plotChart(update_data)
+            self.plotCanvas(update_data)
 
         else:
             # If user clicks on "Update Chart" button before uploading a CSV
@@ -95,11 +97,13 @@ class Main(QMainWindow, Ui_MainWindow):
             msg.setText("Please upload a valid CSV file first.")
             msg.exec_()
 
+
     def reinitializeCanvas(self):
         for i in reversed(range(self.chartVerticalLayout.count())):
             child = self.chartVerticalLayout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
+
 
     def initializeGraphValues(self,data):
         # ----------- Initialize sma_1 & sma_2 value from inputs ------------ #
@@ -129,7 +133,8 @@ class Main(QMainWindow, Ui_MainWindow):
 
         return data
 
-    def plotChart(self,data):
+
+    def plotCanvas(self,data):
         figure = Figure()
         axis = figure.add_subplot(111)
         axis.xaxis_date()
@@ -142,6 +147,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
         axis.set_xticklabels(data.index.date)
         axis.tick_params(axis='x', rotation=45)
+        axis.legend()
 
         canvas = FigureCanvas(figure)
         canvas.draw()
