@@ -1,7 +1,5 @@
 import os
 import sys
-import math
-import datetime
 import traceback
 import matplotlib
 import numpy as np
@@ -11,8 +9,8 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
 
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
 import matplotlib.dates as mdates
+from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 plt.rcParams["figure.autolayout"] = True
@@ -154,9 +152,9 @@ class Main(QMainWindow, Ui_MainWindow):
         figure = Figure()
         axis = figure.add_subplot(111)
         axis.xaxis_date()
-        axis.xaxis.set_major_locator(mdates.MonthLocator())
-        #set major ticks format
-        axis.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
+
+        axis.xaxis.set_major_locator(self.determineAxisRange(data)[0])
+        axis.xaxis.set_major_formatter(self.determineAxisRange(data)[1])
 
         axis.plot(data[['Close']], 'k-', linewidth=1, label="Close")
         axis.plot(data[[str(self.sma_1) + 'd']], 'b-',linewidth=1, label= str(self.sma_1) + " Day Average")
@@ -164,7 +162,6 @@ class Main(QMainWindow, Ui_MainWindow):
         axis.plot(data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
         axis.plot(data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
-        #axis.set_xticklabels(data.index.date)
         axis.tick_params(axis='x', rotation=45)
         axis.legend()
 
@@ -173,6 +170,17 @@ class Main(QMainWindow, Ui_MainWindow):
 
         self.chartVerticalLayout.addWidget(canvas)
         self.dateRangeDisplay.setText(str(data.index.date.min()) + " to " + str(data.index.date.max()))
+
+
+    def determineAxisRange(self,data):
+        diff = data.index.max() - data.index.min()
+
+        if diff.days <= 31 :
+            return [mdates.DayLocator(),mdates.DateFormatter('%Y-%m-%d')]
+        elif diff.days > 31 and diff.days <= 425:
+            return [mdates.MonthLocator(),mdates.DateFormatter('%Y-%m')]
+        else:
+            return [mdates.YearLocator(),mdates.DateFormatter('%Y')]
 
 
 if __name__ == '__main__':
