@@ -12,7 +12,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
-from matplotlib.dates import date2num
+import matplotlib.dates as mdates
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
 plt.rcParams["figure.autolayout"] = True
@@ -60,6 +60,7 @@ class Main(QMainWindow, Ui_MainWindow):
 
             self.data = pd.read_csv(fname[0],index_col=0,parse_dates=True)
             self.data.drop(self.data.index[self.data['Volume']==0],inplace=True)
+
             # ----------------------------- End ----------------------------- #
 
             initial_data = self.data.copy()
@@ -153,6 +154,9 @@ class Main(QMainWindow, Ui_MainWindow):
         figure = Figure()
         axis = figure.add_subplot(111)
         axis.xaxis_date()
+        axis.xaxis.set_major_locator(mdates.MonthLocator())
+        #set major ticks format
+        axis.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m'))
 
         axis.plot(data[['Close']], 'k-', linewidth=1, label="Close")
         axis.plot(data[[str(self.sma_1) + 'd']], 'b-',linewidth=1, label= str(self.sma_1) + " Day Average")
@@ -160,7 +164,7 @@ class Main(QMainWindow, Ui_MainWindow):
         axis.plot(data[['crossSell']], 'ro',linewidth=1, label="Cross Sell")
         axis.plot(data[['crossBuy']], 'yo',linewidth=1, label="Cross Buy")
 
-        axis.set_xticklabels(data.index.date)
+        #axis.set_xticklabels(data.index.date)
         axis.tick_params(axis='x', rotation=45)
         axis.legend()
 
