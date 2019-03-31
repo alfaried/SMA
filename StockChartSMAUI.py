@@ -28,17 +28,17 @@ class Main(QMainWindow, Ui_MainWindow):
 
         try:
             # Load CSV File button
-            self.loadCSVBtn.clicked.connect(self.loadCSVFile)
+            self.loadCSVBtn.clicked.connect(self.load_csv_file)
 
             # Update Chart button
-            self.updateChartBtn.clicked.connect(self.updateCanvas)
+            self.updateChartBtn.clicked.connect(self.update_canvas)
         except:
              traceback.print_exc()
 
 
-    def loadCSVFile(self):
+    def load_csv_file(self):
         try:
-            self.reinitializeCanvas()
+            self.reinitialize_canvas()
 
             # ---------- Reads and process CSV file in a dataframe ---------- #
             options = QFileDialog.Options()
@@ -50,7 +50,7 @@ class Main(QMainWindow, Ui_MainWindow):
             if fname[0] == '' or fname[0] == None:
                 if self.cache_data['fileName'] != None and not self.cache_data['data'].empty:
                     self.fileNameDisplay.setText(str(self.cache_data['fileName']))
-                    self.plotCanvas(self.cache_data['data'])
+                    self.plot_canvas(self.cache_data['data'])
                 return
 
             self.cache_data['fileName'] = fname[0]
@@ -62,9 +62,9 @@ class Main(QMainWindow, Ui_MainWindow):
             # ----------------------------- End ----------------------------- #
 
             initial_data = self.data.copy()
-            initial_data = self.initializeGraphValues(initial_data)
+            initial_data = self.initialize_graph_values(initial_data)
 
-            self.plotCanvas(initial_data)
+            self.plot_canvas(initial_data)
 
             # ------------------ Updates date inputs in UI ------------------ #
             self.startDateEdit.setDate(initial_data.index.min().date())
@@ -76,9 +76,9 @@ class Main(QMainWindow, Ui_MainWindow):
             msg.exec_()
 
 
-    def updateCanvas(self):
+    def update_canvas(self):
         if hasattr(self, 'data'):
-            self.reinitializeCanvas()
+            self.reinitialize_canvas()
 
             # ------------- Reinitialize start date from inputs ------------- #
             start_date_tokens = self.startDateEdit.text().split("/")
@@ -95,13 +95,13 @@ class Main(QMainWindow, Ui_MainWindow):
             # ----------------------------- End ----------------------------- #
 
             update_data = self.data.copy()
-            update_data = self.initializeGraphValues(update_data)
+            update_data = self.initialize_graph_values(update_data)
 
             min_date_cond = (update_data.index >= f"%s-%s-%s" % (start_date_year, start_date_month, start_date_day))
             max_date_cond = (update_data.index <= f"%s-%s-%s" % (end_date_year, end_date_month, end_date_day))
             update_data = update_data[min_date_cond & max_date_cond]
 
-            self.plotCanvas(update_data)
+            self.plot_canvas(update_data)
 
         else:
             # If user clicks on "Update Chart" button before uploading a CSV
@@ -110,14 +110,14 @@ class Main(QMainWindow, Ui_MainWindow):
             msg.exec_()
 
 
-    def reinitializeCanvas(self):
+    def reinitialize_canvas(self):
         for i in reversed(range(self.chartVerticalLayout.count())):
             child = self.chartVerticalLayout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
 
 
-    def initializeGraphValues(self,data):
+    def initialize_graph_values(self,data):
         # ------- Initialize global sma_1 & sma_2 value from inputs -------- #
         self.sma_1 = int(self.smaOneEdit.text())
         self.sma_2 = int(self.smaTwoEdit.text())
@@ -146,15 +146,15 @@ class Main(QMainWindow, Ui_MainWindow):
         return data
 
 
-    def plotCanvas(self,data):
+    def plot_canvas(self,data):
         self.cache_data['data'] = data
 
         figure = Figure()
         axis = figure.add_subplot(111)
         axis.xaxis_date()
 
-        axis.xaxis.set_major_locator(self.determineAxisRange(data)[0])
-        axis.xaxis.set_major_formatter(self.determineAxisRange(data)[1])
+        axis.xaxis.set_major_locator(self.determine_axis_range(data)[0])
+        axis.xaxis.set_major_formatter(self.determine_axis_range(data)[1])
 
         axis.plot(data[['Close']], 'k-', linewidth=1, label="Close")
         axis.plot(data[[str(self.sma_1) + 'd']], 'b-',linewidth=1, label= str(self.sma_1) + " Day Average")
@@ -172,7 +172,7 @@ class Main(QMainWindow, Ui_MainWindow):
         self.dateRangeDisplay.setText(str(data.index.date.min()) + " to " + str(data.index.date.max()))
 
 
-    def determineAxisRange(self,data):
+    def determine_axis_range(self,data):
         diff = data.index.max() - data.index.min()
 
         if diff.days <= 31 :
