@@ -36,6 +36,7 @@ class Main(QMainWindow, Ui_MainWindow):
         except:
              traceback.print_exc()
 
+
     def loadCSVFile(self):
         try:
             self.reinitializeCanvas()
