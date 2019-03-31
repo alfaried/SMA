@@ -7,7 +7,6 @@ import pandas as pd
 from PyQt5 import uic
 from PyQt5.QtWidgets import QMainWindow, QApplication, QFileDialog, QMessageBox
 
-matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from matplotlib.figure import Figure
